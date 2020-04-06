@@ -6,6 +6,11 @@
  */
 
 public class AVLTree {
+    private IAVLNode root;
+
+    public AVLTree() {
+        this.root = null;
+    }
 
     /**
      * public boolean empty()
@@ -13,7 +18,7 @@ public class AVLTree {
      * returns true if and only if the tree is empty
      */
     public boolean empty() {
-        return false; // to be replaced by student code
+        return this.root == null;
     }
 
     /**
@@ -23,7 +28,17 @@ public class AVLTree {
      * otherwise, returns null
      */
     public String search(int k) {
-        return "42";  // to be replaced by student code
+        IAVLNode node = this.root;
+        while (node != null) {
+            if (node.getKey() == k) {
+                return node.getValue();
+            } else if (node.getKey() < k) {
+                node = node.getLeft();
+            } else {
+                node = node.getRight();
+            }
+        }
+        return null;
     }
 
     /**
@@ -57,7 +72,15 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public String min() {
-        return "42"; // to be replaced by student code
+        if (this.empty()) {
+            return null;
+        }
+
+        IAVLNode node = this.root;
+        while (node.getLeft() != null) {
+            node = node.getLeft();
+        }
+        return node.getValue();
     }
 
     /**
@@ -114,7 +137,7 @@ public class AVLTree {
      * postcondition: none
      */
     public IAVLNode getRoot() {
-        return null;
+        return this.root;
     }
 
     /**
@@ -153,44 +176,54 @@ public class AVLTree {
      * (It must implement IAVLNode)
      */
     public class AVLNode implements IAVLNode {
+        private Item item;
+        private IAVLNode left;
+        private IAVLNode right;
+        private IAVLNode parent;
+        private int height;
+
+        public AVLNode(key, value) {
+            this.item = new Item(key, value);
+        }
+
         public int getKey() {
-            return 42; // to be replaced by student code
+            return this.item.getKey();
         }
 
         public String getValue() {
-            return null; // to be replaced by student code
+            return this.item.getInfo();
         }
 
         public void setLeft(IAVLNode node) {
-            return; // to be replaced by student code
+            this.left = node;
         }
 
         public IAVLNode getLeft() {
-            return null; // to be replaced by student code
+            return this.left;
         }
 
         public void setRight(IAVLNode node) {
-            return; // to be replaced by student code
+            this.right = node;
         }
 
         public IAVLNode getRight() {
-            return null; // to be replaced by student code
+            return this.right;
         }
 
         public void setParent(IAVLNode node) {
-            return; // to be replaced by student code
+            this.parent = node;
         }
 
         public IAVLNode getParent() {
-            return null; // to be replaced by student code
+            return this.parent;
         }
 
         public void setHeight(int height) {
-            return; // to be replaced by student code
+            this.height = height;
         }
 
         public int getHeight() {
-            return 42; // to be replaced by student code
+            return this.height;
         }
 
     }
