@@ -182,7 +182,7 @@ public class AVLTree {
         private IAVLNode parent;
         private int height;
 
-        public AVLNode(key, value) {
+        public AVLNode(int key, String value) {
             this.item = new Item(key, value);
         }
 
