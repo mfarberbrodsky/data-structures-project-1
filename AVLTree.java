@@ -90,7 +90,15 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public String max() {
-        return "42"; // to be replaced by student code
+    	if (this.empty()) {
+    		return null;
+    	}
+    	
+    	IAVLNode node = root;
+    	while (node.getRight() != null) {
+    		node = node.getRight();
+    	}
+    	return node.getValue();
     }
 
     /**
@@ -100,8 +108,44 @@ public class AVLTree {
      * or an empty array if the tree is empty.
      */
     public int[] keysToArray() {
-        int[] arr = new int[42]; // to be replaced by student code
-        return arr;              // to be replaced by student code
+    	
+    	if (this.empty()) {
+    		return new int[0];
+    	}
+    	
+        int[] arr = new int[this.size()];
+        
+        IAVLNode node = this.root;
+        while (node.getLeft() != null) {
+            node = node.getLeft();
+        }
+        
+        arr[0] = node.getKey();
+    
+        
+        for (int i = 1; i < this.size() - 1; i++) {
+        	
+        	while (node.getRight() == null) {
+    			node = node.getParent();
+    		}
+        	
+        	node = node.getRight();
+        	
+        	while (node.getLeft() != null) {
+                   node = node.getLeft();
+        	}
+        	
+        	arr[i] = node.getKey();
+        }
+        
+        node = root;
+    	while (node.getRight() != null) {
+    		node = node.getRight();
+    	}
+        
+        arr[this.size() - 1] = node.getKey();
+        		
+        return arr;
     }
 
     /**
