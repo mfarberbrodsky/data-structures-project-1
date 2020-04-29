@@ -1,435 +1,602 @@
 /**
  * AVLTree
- *
+ * <p>
  * An implementation of a AVL Tree with distinct integer keys and info
  */
 
 public class AVLTree {
-	private IAVLNode root;
+    private IAVLNode root;
 
-	public AVLTree() {
-		this.root = null;
-	}
+    public AVLTree() {
+        this.root = null;
+    }
 
-	/**
-	 * public boolean empty()
-	 *
-	 * returns true if and only if the tree is empty
-	 */
-	public boolean empty() {
-		return this.root == null;
-	}
+    public IAVLNode TreeSelect(int k) {
+        return TreeSelect(this.root, k);
+    }
 
-	/**
-	 * public String search(int k)
-	 *
-	 * returns the info of an item with key k if it exists in the tree otherwise,
-	 * returns null
-	 */
-	public String search(int k) {
-		IAVLNode node = this.root;
-		while (node != null) {
-			if (node.getKey() == k) {
-				return node.getValue();
-			} else if (node.getKey() < k) {
-				node = node.getLeft();
-			} else {
-				node = node.getRight();
-			}
-		}
-		return null;
-	}
+    public IAVLNode TreeSelect(IAVLNode subtreeNode, int k) {
+        int r = ((AVLNode) (subtreeNode.getLeft())).getSize() + 1;
+        if (k == r) {
+            return subtreeNode;
+        } else if (k < r) {
+            return TreeSelect(subtreeNode.getLeft(), k);
+        } else {
+            return TreeSelect(subtreeNode.getRight(), k - r);
+        }
+    }
 
-	public void leftRotate(IAVLNode x) {
-		IAVLNode y = x.getRight();
+    private IAVLNode successor(IAVLNode node) {
+        if (node.getRight() != null) {
+            node = node.getRight();
+            while (node.getLeft() != null) {
+                node = node.getLeft();
+            }
+            return node;
+        } else {
+            while (node.getParent().getLeft() != node) {
+                node = node.getParent();
+            }
+            return node.getParent();
+        }
+    }
 
-		x.setRight(y.getLeft());
+    public IAVLNode predecessor(IAVLNode node) {
+        if (node.getLeft() != null) {
+            node = node.getLeft();
+            while (node.getRight() != null) {
+                node = node.getRight();
+            }
+            return node;
+        } else {
+            while (node.getParent().getRight() != node) {
+                node = node.getParent();
+            }
+            return node.getParent();
+        }
+    }
 
-		if (y.getLeft() != null) {
-			y.getLeft().setParent(x);
-		}
+    /**
+     * public boolean empty()
+     * <p>
+     * returns true if and only if the tree is empty
+     */
+    public boolean empty() {
+        return this.root == null;
+    }
 
-		y.setParent(x.getParent());
+    /**
+     * public String search(int k)
+     * <p>
+     * returns the info of an item with key k if it exists in the tree otherwise,
+     * returns null
+     */
+    public String search(int k) {
+        IAVLNode node = this.root;
+        while (node != null) {
+            if (node.getKey() == k) {
+                return node.getValue();
+            } else if (node.getKey() < k) {
+                node = node.getLeft();
+            } else {
+                node = node.getRight();
+            }
+        }
+        return null;
+    }
 
-		// Update child of x's parent
-		if (x.getParent() == null) {
-			this.root = y;
-		} else if (x == x.getParent().getLeft()) {
-			x.getParent().setLeft(y);
-		} else {
-			x.getParent().setRight(y);
-		}
+    public void leftRotate(IAVLNode x) {
+        IAVLNode y = x.getRight();
 
-		y.setLeft(x);
-		x.setParent(y);
-		
-		
-		x.setHeight(1 + java.lang.Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
-		y.setHeight(1 + java.lang.Math.max(y.getLeft().getHeight(), y.getRight().getHeight()));
-	}
+        x.setRight(y.getLeft());
 
-	public void rightRotate(IAVLNode x) {
-		IAVLNode y = x.getLeft();
+        if (y.getLeft() != null) {
+            y.getLeft().setParent(x);
+        }
 
-		x.setLeft(y.getRight());
+        y.setParent(x.getParent());
 
-		if (y.getRight() != null) {
-			y.getRight().setParent(x);
-		}
+        // Update child of x's parent
+        if (x.getParent() == null) {
+            this.root = y;
+        } else if (x == x.getParent().getLeft()) {
+            x.getParent().setLeft(y);
+        } else {
+            x.getParent().setRight(y);
+        }
 
-		y.setParent(x.getParent());
+        y.setLeft(x);
+        x.setParent(y);
 
-		// Update child of x's parent
-		if (x.getParent() == null) {
-			this.root = y;
-		} else if (x == x.getParent().getLeft()) {
-			x.getParent().setLeft(y);
-		} else {
-			x.getParent().setRight(y);
-		}
+        // Maintain height and size
+        ((AVLNode) y).setSize(((AVLNode) x).getSize());
+        ((AVLNode) x).setSize(((AVLNode) (x.getLeft())).getSize() + ((AVLNode) (x.getRight())).getSize());
 
-		y.setRight(x);
-		x.setParent(y);
-		
-		
-		x.setHeight(1 + java.lang.Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
-		y.setHeight(1 + java.lang.Math.max(y.getLeft().getHeight(), y.getRight().getHeight()));
-	}
+        x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
+        y.setHeight(1 + Math.max(y.getLeft().getHeight(), y.getRight().getHeight()));
+    }
 
-	/**
-	 * public int insert(int k, String i)
-	 *
-	 * inserts an item with key k and info i to the AVL tree. the tree must remain
-	 * valid (keep its invariants). returns the number of rebalancing operations, or
-	 * 0 if no rebalancing operations were necessary. returns -1 if an item with key
-	 * k already exists in the tree.
-	 */
-	public int insert(int k, String i) {
-		
-		IAVLNode newNode = new AVLNode(k, i);
-		IAVLNode xNode = this.root;
-		IAVLNode yNode = null;
-		
-		while (xNode != null) {
-			yNode = xNode;
-			if (xNode.getKey() == k) {
-				return -1;
-			}
-			if (xNode.getKey() < k) {
-				xNode = xNode.getRight();
-			}
-			else {
-				xNode = xNode.getLeft();
-			}
-		}
-		
-		newNode.setParent(yNode);
-		if (yNode.getKey() < k) {
-			yNode.setRight(newNode);
-		}
-		else {                        // k < yNode.geyKey()
-			yNode.setLeft(newNode);
-		}
-		
-		int BF = 0;
-		int childBF = 0;
-		int oldHeight = 0 ;
-		int cnt = 0; // number of rotations while the insertion
-		
-		while (yNode != null) {
-			
-			BF = yNode.getLeft().getHeight() - yNode.getRight().getHeight();
-			oldHeight = yNode.getHeight();
-			
-			yNode.setHeight(1 + java.lang.Math.max(yNode.getLeft().getHeight(), yNode.getRight().getHeight()));
-			
-			if ((java.lang.Math.abs(BF) < 2) && (oldHeight == yNode.getHeight())) {
-				return cnt;
-			}
-			
-			else if ((java.lang.Math.abs(BF) < 2) && (oldHeight != yNode.getHeight())) {
-				yNode = yNode.getParent();
-			}
-			
-			else {                    // abs(BF) = 2
-				if (BF == 2) {
-					childBF = yNode.getLeft().getLeft().getHeight() - yNode.getLeft().getRight().getHeight();
-					if (childBF == 1) {
-						rightRotate(yNode);
-						cnt ++;
-					}
-					else {   // childBF == -1
-						leftRotate(yNode.getLeft());
-						rightRotate(yNode);
-						cnt += 2;
-					}
-				}
-				
-				else {                // BF = -2
-					childBF = yNode.getRight().getLeft().getHeight() - yNode.getRight().getRight().getHeight();
-					if (childBF == 1) {
-						rightRotate(yNode.getRight());
-						leftRotate(yNode);
-						cnt += 2;
-					}
-					else {   // childBF == -1
-						leftRotate(yNode);
-						cnt ++;
-					}
-				}
-				 
-				return cnt;
-			}
-		}
-			
-	}
+    public void rightRotate(IAVLNode x) {
+        IAVLNode y = x.getLeft();
 
-	/**
-	 * public int delete(int k)
-	 *
-	 * deletes an item with key k from the binary tree, if it is there; the tree
-	 * must remain valid (keep its invariants). returns the number of rebalancing
-	 * operations, or 0 if no rebalancing operations were needed. returns -1 if an
-	 * item with key k was not found in the tree.
-	 */
-	public int delete(int k) {
-		return 42; // to be replaced by student code
-	}
+        x.setLeft(y.getRight());
 
-	/**
-	 * public String min()
-	 *
-	 * Returns the info of the item with the smallest key in the tree, or null if
-	 * the tree is empty
-	 */
-	public String min() {
-		if (this.empty()) {
-			return null;
-		}
+        if (y.getRight() != null) {
+            y.getRight().setParent(x);
+        }
 
-		IAVLNode node = this.root;
-		while (node.getLeft() != null) {
-			node = node.getLeft();
-		}
-		return node.getValue();
-	}
+        y.setParent(x.getParent());
 
-	/**
-	 * public String max()
-	 *
-	 * Returns the info of the item with the largest key in the tree, or null if the
-	 * tree is empty
-	 */
-	public String max() {
-		if (this.empty()) {
-			return null;
-		}
+        // Update child of x's parent
+        if (x.getParent() == null) {
+            this.root = y;
+        } else if (x == x.getParent().getLeft()) {
+            x.getParent().setLeft(y);
+        } else {
+            x.getParent().setRight(y);
+        }
 
-		IAVLNode node = root;
-		while (node.getRight() != null) {
-			node = node.getRight();
-		}
-		return node.getValue();
-	}
+        y.setRight(x);
+        x.setParent(y);
 
-	/**
-	 * public int[] keysToArray()
-	 *
-	 * Returns a sorted array which contains all keys in the tree, or an empty array
-	 * if the tree is empty.
-	 */
-	public int[] keysToArray() {
+        // Maintain height and size
+        ((AVLNode) y).setSize(((AVLNode) x).getSize());
+        ((AVLNode) x).setSize(((AVLNode) (x.getLeft())).getSize() + ((AVLNode) (x.getRight())).getSize());
 
-		if (this.empty()) {
-			return new int[0];
-		}
+        x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
+        y.setHeight(1 + Math.max(y.getLeft().getHeight(), y.getRight().getHeight()));
+    }
 
-		IAVLNode[] stack = new IAVLNode[this.size()];
-		int[] arr = new int[this.size()];
-		
-		int stackPointer = 0;
-		int arrPointer = 0;
+    /**
+     * public int insert(int k, String i)
+     * <p>
+     * inserts an item with key k and info i to the AVL tree. the tree must remain
+     * valid (keep its invariants). returns the number of rebalancing operations, or
+     * 0 if no rebalancing operations were necessary. returns -1 if an item with key
+     * k already exists in the tree.
+     */
+    public int insert(int k, String i) {
 
-		IAVLNode node = this.root;
-		
-		stack[stackPointer] = node;
-		node = node.getLeft();
-		
-		
-		while ((stackPointer >= 0) || (node != null)) {
-			
-			while (node != null) {
-				stackPointer ++;
-				stack[stackPointer] = node;
-				node = node.getLeft();
-			}
+        IAVLNode newNode = new AVLNode(k, i);
+        IAVLNode xNode = this.root;
+        IAVLNode yNode = null;
 
-			node = stack[stackPointer];
-			stack[stackPointer] = null;
-			stackPointer --;
-			
-			arr[arrPointer] = node.getKey();
-			arrPointer ++;
-			
-			node = node.getRight();
-			
-		}
+        while (xNode != null) {
+            yNode = xNode;
+            if (xNode.getKey() == k) {
+                return -1;
+            }
+            if (xNode.getKey() < k) {
+                xNode = xNode.getRight();
+            } else {
+                xNode = xNode.getLeft();
+            }
+        }
 
-		return arr;
-	}
+        newNode.setParent(yNode);
+        if (yNode.getKey() < k) {
+            yNode.setRight(newNode);
+        } else {                        // k < yNode.geyKey()
+            yNode.setLeft(newNode);
+        }
 
-	/**
-	 * public String[] infoToArray()
-	 *
-	 * Returns an array which contains all info in the tree, sorted by their
-	 * respective keys, or an empty array if the tree is empty.
-	 */
-	public String[] infoToArray() {
-		
-		if (this.empty()) {
-			return new String[0];
-		}
+        int BF = 0;
+        int childBF = 0;
+        int oldHeight = 0;
+        int cnt = 0; // number of rotations while the insertion
 
-		IAVLNode[] stack = new IAVLNode[this.size()];
-		String[] arr = new String[this.size()];
-		
-		int stackPointer = 0;
-		int arrPointer = 0;
+        while (yNode != null) {
 
-		IAVLNode node = this.root;
-		
-		stack[stackPointer] = node;
-		node = node.getLeft();
-		
-		
-		while ((stackPointer >= 0) || (node != null)) {
-			
-			while (node != null) {
-				stackPointer ++;
-				stack[stackPointer] = node;
-				node = node.getLeft();
-			}
+            BF = yNode.getLeft().getHeight() - yNode.getRight().getHeight();
+            oldHeight = yNode.getHeight();
 
-			node = stack[stackPointer];
-			stack[stackPointer] = null;
-			stackPointer --;
-			
-			arr[arrPointer] = node.getValue();
-			arrPointer ++;
-			
-			node = node.getRight();
-			
-		}
+            yNode.setHeight(1 + java.lang.Math.max(yNode.getLeft().getHeight(), yNode.getRight().getHeight()));
 
-		return arr;
-	}
+            if ((java.lang.Math.abs(BF) < 2) && (oldHeight == yNode.getHeight())) {
+                return cnt;
+            } else if ((java.lang.Math.abs(BF) < 2) && (oldHeight != yNode.getHeight())) {
+                yNode = yNode.getParent();
+            } else {                    // abs(BF) = 2
+                if (BF == 2) {
+                    childBF = yNode.getLeft().getLeft().getHeight() - yNode.getLeft().getRight().getHeight();
+                    if (childBF == 1) {
+                        rightRotate(yNode);
+                        cnt++;
+                    } else {   // childBF == -1
+                        leftRotate(yNode.getLeft());
+                        rightRotate(yNode);
+                        cnt += 2;
+                    }
+                } else {                // BF = -2
+                    childBF = yNode.getRight().getLeft().getHeight() - yNode.getRight().getRight().getHeight();
+                    if (childBF == 1) {
+                        rightRotate(yNode.getRight());
+                        leftRotate(yNode);
+                        cnt += 2;
+                    } else {   // childBF == -1
+                        leftRotate(yNode);
+                        cnt++;
+                    }
+                }
 
-	/**
-	 * public int size()
-	 *
-	 * Returns the number of nodes in the tree.
-	 *
-	 * precondition: none postcondition: none
-	 */
-	public int size() {
-		return 42; // to be replaced by student code
-	}
+                return cnt;
+            }
+        }
 
-	/**
-	 * public int getRoot()
-	 *
-	 * Returns the root AVL node, or null if the tree is empty
-	 *
-	 * precondition: none postcondition: none
-	 */
-	public IAVLNode getRoot() {
-		return this.root;
-	}
+        return cnt;
+    }
 
-	/**
-	 * public interface IAVLNode ! Do not delete or modify this - otherwise all
-	 * tests will fail !
-	 */
-	public interface IAVLNode {
-		public int getKey(); // returns node's key
+    /**
+     * public int delete(int k)
+     * <p>
+     * deletes an item with key k from the binary tree, if it is there; the tree
+     * must remain valid (keep its invariants). returns the number of rebalancing
+     * operations, or 0 if no rebalancing operations were needed. returns -1 if an
+     * item with key k was not found in the tree.
+     */
+    public IAVLNode deleteNodeBST(IAVLNode node) {
+        IAVLNode parentOfDeletedNode = null;
 
-		public String getValue(); // returns node's value [info]
+        // If node is a leaf, simply delete it
+        if (node.getLeft() == null && node.getRight() == null) {
+            if (node.getParent().getLeft() == node) {
+                node.getParent().setLeft(null);
+            } else {
+                node.getParent().setRight(null);
+            }
+            parentOfDeletedNode = node.getParent();
+        }
+        // if node has only a right child, bypass it
+        else if (node.getLeft() == null) {
+            if (node.getParent().getLeft() == node) {
+                node.getParent().setLeft(node.getRight());
+            } else {
+                node.getParent().setRight(node.getRight());
+            }
+            node.getRight().setParent(node.getParent());
 
-		public void setLeft(IAVLNode node); // sets left child
+            parentOfDeletedNode = node.getParent();
+        }
+        // if node has only a left child, bypass it
+        else if (node.getRight() == null) {
+            if (node.getParent().getLeft() == node) {
+                node.getParent().setLeft(node.getLeft());
+            } else {
+                node.getParent().setRight(node.getLeft());
+            }
+            node.getLeft().setParent(node.getParent());
 
-		public IAVLNode getLeft(); // returns left child (if there is no left child return null)
+            parentOfDeletedNode = node.getParent();
+        }
+        // if node has two children
+        else {
+            IAVLNode nodeSuccessor = this.successor(node);
+            // remove successor from the tree
+            parentOfDeletedNode = this.deleteNodeBST(nodeSuccessor);
 
-		public void setRight(IAVLNode node); // sets right child
+            // replace node with successor
+            if (node.getParent().getLeft() == node) {
+                node.getParent().setLeft(nodeSuccessor);
+            } else {
+                node.getParent().setRight(nodeSuccessor);
+            }
+            nodeSuccessor.setParent(node.getParent());
+            nodeSuccessor.setLeft(node.getLeft());
+            nodeSuccessor.setRight(node.getRight());
+            nodeSuccessor.setHeight(node.getHeight());
+        }
 
-		public IAVLNode getRight(); // returns right child (if there is no right child return null)
+        // Update height and size of all ancestors
+        IAVLNode ancestor = parentOfDeletedNode;
+        while (ancestor != null) {
+            ancestor.setHeight(1 + Math.max(ancestor.getLeft().getHeight(), ancestor.getRight().getHeight()));
+            ((AVLNode) ancestor).setSize(((AVLNode) ancestor).getSize() - 1);
+            ancestor = ancestor.getParent();
+        }
 
-		public void setParent(IAVLNode node); // sets parent
+        return parentOfDeletedNode;
+    }
 
-		public IAVLNode getParent(); // returns the parent (if there is no parent return null)
+    // Returns number of rotations performed
+    public int deleteNode(IAVLNode node) {
+        int rotations = 0;
 
-		public void setHeight(int height); // sets the height of the node
+        IAVLNode y = deleteNodeBST(node);
+        while (y != null) {
+            int balanceFactor = y.getLeft().getHeight() - y.getRight().getHeight();
+            if (balanceFactor == -2) {
+                int rightBalanceFactor = y.getRight().getLeft().getHeight() - y.getRight().getRight().getHeight();
+                if (rightBalanceFactor == -1 || rightBalanceFactor == 0) {
+                    this.leftRotate(y.getRight());
+                    rotations += 1;
+                } else if (rightBalanceFactor == 1) {
+                    this.rightRotate(y.getRight());
+                    this.leftRotate(y.getRight());
+                    rotations += 2;
+                }
+            } else if (balanceFactor == 2) {
+                int leftBalanceFactor = y.getLeft().getLeft().getHeight() - y.getLeft().getRight().getHeight();
+                if (leftBalanceFactor == -1) {
+                    this.leftRotate(y.getLeft());
+                    this.rightRotate(y.getLeft());
+                    rotations += 2;
+                } else if (leftBalanceFactor == 0 || leftBalanceFactor == 1) {
+                    this.rightRotate(y.getLeft());
+                    rotations += 1;
+                }
+            }
+            y = y.getParent();
+        }
 
-		public int getHeight(); // Returns the height of the node
-	}
+        return rotations;
+    }
 
-	/**
-	 * public class AVLNode
-	 *
-	 * If you wish to implement classes other than AVLTree (for example AVLNode), do
-	 * it in this file, not in another file. This class can and must be modified.
-	 * (It must implement IAVLNode)
-	 */
-	public class AVLNode implements IAVLNode {
-		private Item item;
-		private IAVLNode left;
-		private IAVLNode right;
-		private IAVLNode parent;
-		private int height;
+    // Returns -1 if k doesn't exist, otherwise number of rotations performed
+    public int delete(int k) {
+        // TODO: Handle the special case where the root is deleted
+        IAVLNode node = this.root;
 
-		public AVLNode(int key, String value) {
-			this.item = new Item(key, value);
-		}
+        while (node != null) {
+            if (node.getKey() == k) {
+                return deleteNode(node);
+            } else if (node.getKey() < k) {
+                node = node.getLeft();
+            } else {
+                node = node.getRight();
+            }
+        }
+        return -1;
+    }
 
-		public int getKey() {
-			return this.item.getKey();
-		}
+    /**
+     * public String min()
+     * <p>
+     * Returns the info of the item with the smallest key in the tree, or null if
+     * the tree is empty
+     */
+    public String min() {
+        if (this.empty()) {
+            return null;
+        }
 
-		public String getValue() {
-			return this.item.getInfo();
-		}
+        IAVLNode node = this.root;
+        while (node.getLeft() != null) {
+            node = node.getLeft();
+        }
+        return node.getValue();
+    }
 
-		public void setLeft(IAVLNode node) {
-			this.left = node;
-		}
+    /**
+     * public String max()
+     * <p>
+     * Returns the info of the item with the largest key in the tree, or null if the
+     * tree is empty
+     */
+    public String max() {
+        if (this.empty()) {
+            return null;
+        }
 
-		public IAVLNode getLeft() {
-			return this.left;
-		}
+        IAVLNode node = root;
+        while (node.getRight() != null) {
+            node = node.getRight();
+        }
+        return node.getValue();
+    }
 
-		public void setRight(IAVLNode node) {
-			this.right = node;
-		}
+    /**
+     * public int[] keysToArray()
+     * <p>
+     * Returns a sorted array which contains all keys in the tree, or an empty array
+     * if the tree is empty.
+     */
+    public int[] keysToArray() {
 
-		public IAVLNode getRight() {
-			return this.right;
-		}
+        if (this.empty()) {
+            return new int[0];
+        }
 
-		public void setParent(IAVLNode node) {
-			this.parent = node;
-		}
+        IAVLNode[] stack = new IAVLNode[this.size()];
+        int[] arr = new int[this.size()];
 
-		public IAVLNode getParent() {
-			return this.parent;
-		}
+        int stackPointer = 0;
+        int arrPointer = 0;
 
-		public void setHeight(int height) {
-			this.height = height;
-		}
+        IAVLNode node = this.root;
 
-		public int getHeight() {
-			return this.height;
-		}
+        stack[stackPointer] = node;
+        node = node.getLeft();
 
-	}
+
+        while ((stackPointer >= 0) || (node != null)) {
+
+            while (node != null) {
+                stackPointer++;
+                stack[stackPointer] = node;
+                node = node.getLeft();
+            }
+
+            node = stack[stackPointer];
+            stack[stackPointer] = null;
+            stackPointer--;
+
+            arr[arrPointer] = node.getKey();
+            arrPointer++;
+
+            node = node.getRight();
+
+        }
+
+        return arr;
+    }
+
+    /**
+     * public String[] infoToArray()
+     * <p>
+     * Returns an array which contains all info in the tree, sorted by their
+     * respective keys, or an empty array if the tree is empty.
+     */
+    public String[] infoToArray() {
+
+        if (this.empty()) {
+            return new String[0];
+        }
+
+        IAVLNode[] stack = new IAVLNode[this.size()];
+        String[] arr = new String[this.size()];
+
+        int stackPointer = 0;
+        int arrPointer = 0;
+
+        IAVLNode node = this.root;
+
+        stack[stackPointer] = node;
+        node = node.getLeft();
+
+
+        while ((stackPointer >= 0) || (node != null)) {
+
+            while (node != null) {
+                stackPointer++;
+                stack[stackPointer] = node;
+                node = node.getLeft();
+            }
+
+            node = stack[stackPointer];
+            stack[stackPointer] = null;
+            stackPointer--;
+
+            arr[arrPointer] = node.getValue();
+            arrPointer++;
+
+            node = node.getRight();
+
+        }
+
+        return arr;
+    }
+
+    /**
+     * public int size()
+     * <p>
+     * Returns the number of nodes in the tree.
+     * <p>
+     * precondition: none postcondition: none
+     */
+    public int size() {
+        return ((AVLNode) this.root).getSize();
+    }
+
+    /**
+     * public int getRoot()
+     * <p>
+     * Returns the root AVL node, or null if the tree is empty
+     * <p>
+     * precondition: none postcondition: none
+     */
+    public IAVLNode getRoot() {
+        return this.root;
+    }
+
+    /**
+     * public interface IAVLNode ! Do not delete or modify this - otherwise all
+     * tests will fail !
+     */
+    public interface IAVLNode {
+        public int getKey(); // returns node's key
+
+        public String getValue(); // returns node's value [info]
+
+        public void setLeft(IAVLNode node); // sets left child
+
+        public IAVLNode getLeft(); // returns left child (if there is no left child return null)
+
+        public void setRight(IAVLNode node); // sets right child
+
+        public IAVLNode getRight(); // returns right child (if there is no right child return null)
+
+        public void setParent(IAVLNode node); // sets parent
+
+        public IAVLNode getParent(); // returns the parent (if there is no parent return null)
+
+        public void setHeight(int height); // sets the height of the node
+
+        public int getHeight(); // Returns the height of the node
+    }
+
+    /**
+     * public class AVLNode
+     * <p>
+     * If you wish to implement classes other than AVLTree (for example AVLNode), do
+     * it in this file, not in another file. This class can and must be modified.
+     * (It must implement IAVLNode)
+     */
+    public class AVLNode implements IAVLNode {
+        private Item item;
+        private IAVLNode left;
+        private IAVLNode right;
+        private IAVLNode parent;
+        private int height;
+        private int size;
+
+        public AVLNode() {
+            this.item = null;
+            this.height = -1;
+            this.size = 0;
+        }
+
+        public AVLNode(int key, String value) {
+            this.item = new Item(key, value);
+        }
+
+        public int getKey() {
+            return this.item.getKey();
+        }
+
+        public String getValue() {
+            return this.item.getInfo();
+        }
+
+        public void setLeft(IAVLNode node) {
+            this.left = node;
+        }
+
+        public IAVLNode getLeft() {
+            return this.left;
+        }
+
+        public void setRight(IAVLNode node) {
+            this.right = node;
+        }
+
+        public IAVLNode getRight() {
+            return this.right;
+        }
+
+        public void setParent(IAVLNode node) {
+            this.parent = node;
+        }
+
+        public IAVLNode getParent() {
+            return this.parent;
+        }
+
+        public void setHeight(int height) {
+            this.height = height;
+        }
+
+        public int getHeight() {
+            return this.height;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
+        }
+
+        public int getSize() {
+            return this.size;
+        }
+
+    }
 
 }
