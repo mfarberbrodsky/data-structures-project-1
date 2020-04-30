@@ -298,21 +298,7 @@ public class AVLTree {
             parentOfDeletedNode = this.deleteNodeBST(nodeSuccessor);
 
             // replace node with successor
-            if (node.getParent() != null) {
-                if (node.getParent().getLeft() == node) {
-                    node.getParent().setLeft(nodeSuccessor);
-                } else {
-                    node.getParent().setRight(nodeSuccessor);
-                }
-            } else {
-                this.root = nodeSuccessor;
-            }
-
-            nodeSuccessor.setParent(node.getParent());
-            nodeSuccessor.setLeft(node.getLeft());
-            nodeSuccessor.setRight(node.getRight());
-            nodeSuccessor.setHeight(getHeight(node));
-            ((AVLNode) nodeSuccessor).setSize(getSize(node));
+            ((AVLNode) node).setItem(nodeSuccessor.getKey(), nodeSuccessor.getValue());
         }
 
         // Update height and size of all ancestors
@@ -591,6 +577,10 @@ public class AVLTree {
             this.item = new Item(key, value);
             this.height = 0;
             this.size = 1;
+        }
+
+        public void setItem(int key, String value) {
+            this.item = new Item(key, value);
         }
 
         public int getKey() {
