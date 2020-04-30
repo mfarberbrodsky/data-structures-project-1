@@ -196,10 +196,10 @@ public class AVLTree {
             oldHeight = getHeight(yNode);
 
             yNode.setHeight(1 + java.lang.Math.max(getHeight(yNode.getLeft()), getHeight(yNode.getRight())));
-            ((AVLNode)yNode).setSize(1 + getSize(yNode.getLeft()) + getSize(yNode.getRight()));
+            ((AVLNode) yNode).setSize(1 + getSize(yNode.getLeft()) + getSize(yNode.getRight()));
 
             if ((java.lang.Math.abs(BF) < 2) && (oldHeight == getHeight(yNode))) {
-                return cnt;
+                break;
             } else if ((java.lang.Math.abs(BF) < 2) && (oldHeight != getHeight(yNode))) {
                 yNode = yNode.getParent();
             } else {                    // abs(BF) = 2
@@ -225,8 +225,13 @@ public class AVLTree {
                     }
                 }
 
-                return cnt;
+                break;
             }
+        }
+
+        while (yNode != null) {
+            ((AVLNode) yNode).setSize(1 + getSize(yNode.getLeft()) + getSize(yNode.getRight()));
+            yNode = yNode.getParent();
         }
 
         return cnt;
