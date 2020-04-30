@@ -16,7 +16,7 @@ public class AVLTree {
     }
 
     public IAVLNode TreeSelect(IAVLNode subtreeNode, int k) {
-        int r = ((AVLNode) (subtreeNode.getLeft())).getSize() + 1;
+        int r = getSize(subtreeNode.getLeft()) + 1;
         if (k == r) {
             return subtreeNode;
         } else if (k < r) {
@@ -109,8 +109,8 @@ public class AVLTree {
         x.setParent(y);
 
         // Maintain height and size
-        ((AVLNode) y).setSize(((AVLNode) x).getSize());
-        ((AVLNode) x).setSize(((AVLNode) (x.getLeft())).getSize() + ((AVLNode) (x.getRight())).getSize());
+        ((AVLNode) y).setSize(getSize(x));
+        ((AVLNode) x).setSize(getSize(x.getLeft()) + getSize(x.getRight()) + 1);
 
         x.setHeight(1 + Math.max(getHeight(x.getLeft()), getHeight(x.getRight())));
         y.setHeight(1 + Math.max(getHeight(y.getLeft()), getHeight(y.getRight())));
@@ -140,8 +140,8 @@ public class AVLTree {
         x.setParent(y);
 
         // Maintain height and size
-        ((AVLNode) y).setSize(((AVLNode) x).getSize());
-        ((AVLNode) x).setSize(((AVLNode) (x.getLeft())).getSize() + ((AVLNode) (x.getRight())).getSize());
+        ((AVLNode) y).setSize(getSize(x));
+        ((AVLNode) x).setSize(getSize(x.getLeft()) + getSize(x.getRight()) + 1);
 
         x.setHeight(1 + Math.max(getHeight(x.getLeft()), getHeight(x.getRight())));
         y.setHeight(1 + Math.max(getHeight(y.getLeft()), getHeight(y.getRight())));
@@ -312,7 +312,7 @@ public class AVLTree {
         IAVLNode ancestor = parentOfDeletedNode;
         while (ancestor != null) {
             ancestor.setHeight(1 + Math.max(getHeight(ancestor.getLeft()), getHeight(ancestor.getRight())));
-            ((AVLNode) ancestor).setSize(((AVLNode) ancestor).getSize() - 1);
+            ((AVLNode) ancestor).setSize(getSize(ancestor) - 1);
             ancestor = ancestor.getParent();
         }
 
@@ -506,7 +506,7 @@ public class AVLTree {
      * precondition: none postcondition: none
      */
     public int size() {
-        return ((AVLNode) this.root).getSize();
+        return getSize(this.root);
     }
 
     /**
@@ -522,13 +522,19 @@ public class AVLTree {
 
 
     public int getHeight(IAVLNode node) {
-
         if (node == null) {
             return -1;
         }
 
         return node.getHeight();
+    }
 
+    public int getSize(IAVLNode node) {
+        if (node == null) {
+            return 0;
+        }
+
+        return ((AVLNode) node).getSize();
     }
 
     /**
