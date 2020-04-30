@@ -195,12 +195,12 @@ public class AVLTree {
             BF = getHeight(yNode.getLeft()) - getHeight(yNode.getRight());
             oldHeight = getHeight(yNode);
 
-            yNode.setHeight(1 + java.lang.Math.max(getHeight(yNode.getLeft()), getHeight(yNode.getRight())));
+            yNode.setHeight(1 + Math.max(getHeight(yNode.getLeft()), getHeight(yNode.getRight())));
             ((AVLNode) yNode).setSize(1 + getSize(yNode.getLeft()) + getSize(yNode.getRight()));
 
-            if ((java.lang.Math.abs(BF) < 2) && (oldHeight == getHeight(yNode))) {
+            if ((Math.abs(BF) < 2) && (oldHeight == getHeight(yNode))) {
                 break;
-            } else if ((java.lang.Math.abs(BF) < 2) && (oldHeight != getHeight(yNode))) {
+            } else if ((Math.abs(BF) < 2) && (oldHeight != getHeight(yNode))) {
                 yNode = yNode.getParent();
             } else {                    // abs(BF) = 2
                 if (BF == 2) {
@@ -312,6 +312,7 @@ public class AVLTree {
             nodeSuccessor.setLeft(node.getLeft());
             nodeSuccessor.setRight(node.getRight());
             nodeSuccessor.setHeight(getHeight(node));
+            ((AVLNode) nodeSuccessor).setSize(getSize(node));
         }
 
         // Update height and size of all ancestors
@@ -337,21 +338,21 @@ public class AVLTree {
             if (balanceFactor == -2) {
                 int rightBalanceFactor = getHeight(node.getRight().getLeft()) - getHeight(node.getRight().getRight());
                 if (rightBalanceFactor == -1 || rightBalanceFactor == 0) {
-                    this.leftRotate(node.getRight());
+                    this.leftRotate(node);
                     rotations += 1;
                 } else if (rightBalanceFactor == 1) {
                     this.rightRotate(node.getRight());
-                    this.leftRotate(node.getRight());
+                    this.leftRotate(node);
                     rotations += 2;
                 }
             } else if (balanceFactor == 2) {
                 int leftBalanceFactor = getHeight(node.getLeft().getLeft()) - getHeight(node.getLeft().getRight());
                 if (leftBalanceFactor == -1) {
                     this.leftRotate(node.getLeft());
-                    this.rightRotate(node.getLeft());
+                    this.rightRotate(node);
                     rotations += 2;
                 } else if (leftBalanceFactor == 0 || leftBalanceFactor == 1) {
-                    this.rightRotate(node.getLeft());
+                    this.rightRotate(node);
                     rotations += 1;
                 }
             }
