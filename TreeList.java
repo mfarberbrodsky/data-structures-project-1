@@ -5,7 +5,7 @@
  */
 
 public class TreeList {
-    private AVLTree tree;
+    public AVLTree tree;
 
     public TreeList() {
         this.tree = new AVLTree();
@@ -18,7 +18,10 @@ public class TreeList {
      * otherwise, returns null
      */
     public Item retrieve(int i) {
-        AVLTree.IAVLNode node = this.tree.TreeSelect(i);
+        if (i < 0 || i >= tree.size()) {
+            return null;
+        }
+        AVLTree.IAVLNode node = this.tree.TreeSelect(i + 1);
         return new Item(node.getKey(), node.getValue());
     }
 
@@ -34,25 +37,39 @@ public class TreeList {
         }
 
         AVLTree.IAVLNode newNode = tree.new AVLNode(k, s);
+
+        if (i == 0 && tree.getRoot() == null) {
+            tree.insert(k, s);
+            return 0;
+        }
+
+        AVLTree.IAVLNode parentOfInsertedNode = null;
         if (i == tree.size()) {
             AVLTree.IAVLNode max = tree.getRoot();
             while (max.getRight() != null) {
                 max = max.getRight();
             }
             max.setRight(newNode);
+            newNode.setParent(max);
+            parentOfInsertedNode = max;
         } else {
             AVLTree.IAVLNode node = tree.TreeSelect(i + 1);
             if (node.getLeft() == null) {
                 node.setLeft(newNode);
+                newNode.setParent(node);
+                parentOfInsertedNode = node;
             } else {
                 AVLTree.IAVLNode x = tree.predecessor(node);
                 x.setRight(newNode);
+                newNode.setParent(x);
+                parentOfInsertedNode = x;
             }
         }
 
-        // TODO: Update heights and sizes, perform rotations
+        this.tree.updateHeightsAndSizes(parentOfInsertedNode);
+        this.tree.fixAVLCriminals(parentOfInsertedNode);
 
-        return 0;    // to be replaced by student code
+        return 0;
     }
 
     /**
@@ -66,7 +83,8 @@ public class TreeList {
             return -1;
         }
         AVLTree.IAVLNode node = this.tree.TreeSelect(i);
-        this.tree.deleteNode(node);
+        AVLTree.IAVLNode parentOfDeletedNode = this.tree.deleteNodeBST(node);
+        this.tree.fixAVLCriminals(parentOfDeletedNode);
         return 0;
     }
 

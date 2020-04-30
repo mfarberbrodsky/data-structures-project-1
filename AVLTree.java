@@ -315,58 +315,59 @@ public class AVLTree {
         }
 
         // Update height and size of all ancestors
-        IAVLNode ancestor = parentOfDeletedNode;
-        while (ancestor != null) {
-            ancestor.setHeight(1 + Math.max(getHeight(ancestor.getLeft()), getHeight(ancestor.getRight())));
-            ((AVLNode) ancestor).setSize(getSize(ancestor) - 1);
-            ancestor = ancestor.getParent();
-        }
+        updateHeightsAndSizes(parentOfDeletedNode);
 
         return parentOfDeletedNode;
     }
 
-    // Returns number of rotations performed
-    public int deleteNode(IAVLNode node) {
-        int rotations = 0;
+    // Update heights and sizes of all nodes from node upwards
+    public void updateHeightsAndSizes(IAVLNode node) {
+        while (node != null) {
+            node.setHeight(1 + Math.max(getHeight(node.getLeft()), getHeight(node.getRight())));
+            ((AVLNode) node).setSize(1 + getSize(node.getLeft()) + getSize(node.getRight()));
+            node = node.getParent();
+        }
+    }
 
-        IAVLNode y = deleteNodeBST(node);
-        while (y != null) {
-            int balanceFactor = getHeight(y.getLeft()) - getHeight(y.getRight());
+    // Perform rotations from node upwards, return number of rotations performed
+    public int fixAVLCriminals(IAVLNode node) {
+        int rotations = 0;
+        while (node != null) {
+            int balanceFactor = getHeight(node.getLeft()) - getHeight(node.getRight());
             if (balanceFactor == -2) {
-                int rightBalanceFactor = getHeight(y.getRight().getLeft()) - getHeight(y.getRight().getRight());
+                int rightBalanceFactor = getHeight(node.getRight().getLeft()) - getHeight(node.getRight().getRight());
                 if (rightBalanceFactor == -1 || rightBalanceFactor == 0) {
-                    this.leftRotate(y.getRight());
+                    this.leftRotate(node.getRight());
                     rotations += 1;
                 } else if (rightBalanceFactor == 1) {
-                    this.rightRotate(y.getRight());
-                    this.leftRotate(y.getRight());
+                    this.rightRotate(node.getRight());
+                    this.leftRotate(node.getRight());
                     rotations += 2;
                 }
             } else if (balanceFactor == 2) {
-                int leftBalanceFactor = getHeight(y.getLeft().getLeft()) - getHeight(y.getLeft().getRight());
+                int leftBalanceFactor = getHeight(node.getLeft().getLeft()) - getHeight(node.getLeft().getRight());
                 if (leftBalanceFactor == -1) {
-                    this.leftRotate(y.getLeft());
-                    this.rightRotate(y.getLeft());
+                    this.leftRotate(node.getLeft());
+                    this.rightRotate(node.getLeft());
                     rotations += 2;
                 } else if (leftBalanceFactor == 0 || leftBalanceFactor == 1) {
-                    this.rightRotate(y.getLeft());
+                    this.rightRotate(node.getLeft());
                     rotations += 1;
                 }
             }
-            y = y.getParent();
+            node = node.getParent();
         }
-
         return rotations;
     }
 
     // Returns -1 if k doesn't exist, otherwise number of rotations performed
     public int delete(int k) {
-        // TODO: Handle the special case where the root is deleted
         IAVLNode node = this.root;
 
         while (node != null) {
             if (k == node.getKey()) {
-                return deleteNode(node);
+                IAVLNode parentOfDeletedNode = deleteNodeBST(node);
+                return fixAVLCriminals(parentOfDeletedNode);
             } else if (k < node.getKey()) {
                 node = node.getLeft();
             } else {
