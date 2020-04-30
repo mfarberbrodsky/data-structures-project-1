@@ -74,9 +74,9 @@ public class AVLTree {
     public String search(int k) {
         IAVLNode node = this.root;
         while (node != null) {
-            if (node.getKey() == k) {
+            if (k == node.getKey()) {
                 return node.getValue();
-            } else if (node.getKey() < k) {
+            } else if (k < node.getKey()) {
                 node = node.getLeft();
             } else {
                 node = node.getRight();
@@ -196,6 +196,7 @@ public class AVLTree {
             oldHeight = getHeight(yNode);
 
             yNode.setHeight(1 + java.lang.Math.max(getHeight(yNode.getLeft()), getHeight(yNode.getRight())));
+            ((AVLNode)yNode).setSize(1 + getSize(yNode.getLeft()) + getSize(yNode.getRight()));
 
             if ((java.lang.Math.abs(BF) < 2) && (oldHeight == getHeight(yNode))) {
                 return cnt;
@@ -359,9 +360,9 @@ public class AVLTree {
         IAVLNode node = this.root;
 
         while (node != null) {
-            if (node.getKey() == k) {
+            if (k == node.getKey()) {
                 return deleteNode(node);
-            } else if (node.getKey() < k) {
+            } else if (k < node.getKey()) {
                 node = node.getLeft();
             } else {
                 node = node.getRight();
@@ -578,14 +579,11 @@ public class AVLTree {
         private int height;
         private int size;
 
-        public AVLNode() {
-            this.item = null;
-            this.height = -1;
-            this.size = 0;
-        }
 
         public AVLNode(int key, String value) {
             this.item = new Item(key, value);
+            this.height = 0;
+            this.size = 1;
         }
 
         public int getKey() {
