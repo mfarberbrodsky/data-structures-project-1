@@ -112,8 +112,8 @@ public class AVLTree {
         ((AVLNode) y).setSize(((AVLNode) x).getSize());
         ((AVLNode) x).setSize(((AVLNode) (x.getLeft())).getSize() + ((AVLNode) (x.getRight())).getSize());
 
-        x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
-        y.setHeight(1 + Math.max(y.getLeft().getHeight(), y.getRight().getHeight()));
+        x.setHeight(1 + Math.max(getHeight(x.getLeft()), getHeight(x.getRight())));
+        y.setHeight(1 + Math.max(getHeight(y.getLeft()), getHeight(y.getRight())));
     }
 
     public void rightRotate(IAVLNode x) {
@@ -143,8 +143,8 @@ public class AVLTree {
         ((AVLNode) y).setSize(((AVLNode) x).getSize());
         ((AVLNode) x).setSize(((AVLNode) (x.getLeft())).getSize() + ((AVLNode) (x.getRight())).getSize());
 
-        x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
-        y.setHeight(1 + Math.max(y.getLeft().getHeight(), y.getRight().getHeight()));
+        x.setHeight(1 + Math.max(getHeight(x.getLeft()), getHeight(x.getRight())));
+        y.setHeight(1 + Math.max(getHeight(y.getLeft()), getHeight(y.getRight())));
     }
 
     /**
@@ -187,18 +187,18 @@ public class AVLTree {
 
         while (yNode != null) {
 
-            BF = yNode.getLeft().getHeight() - yNode.getRight().getHeight();
-            oldHeight = yNode.getHeight();
+            BF = getHeight(yNode.getLeft()) - getHeight(yNode.getRight());
+            oldHeight = getHeight(yNode);
 
-            yNode.setHeight(1 + java.lang.Math.max(yNode.getLeft().getHeight(), yNode.getRight().getHeight()));
+            yNode.setHeight(1 + java.lang.Math.max(getHeight(yNode.getLeft()), getHeight(yNode.getRight())));
 
-            if ((java.lang.Math.abs(BF) < 2) && (oldHeight == yNode.getHeight())) {
+            if ((java.lang.Math.abs(BF) < 2) && (oldHeight == getHeight(yNode))) {
                 return cnt;
-            } else if ((java.lang.Math.abs(BF) < 2) && (oldHeight != yNode.getHeight())) {
+            } else if ((java.lang.Math.abs(BF) < 2) && (oldHeight != getHeight(yNode))) {
                 yNode = yNode.getParent();
             } else {                    // abs(BF) = 2
                 if (BF == 2) {
-                    childBF = yNode.getLeft().getLeft().getHeight() - yNode.getLeft().getRight().getHeight();
+                    childBF = getHeight(yNode.getLeft().getLeft()) - getHeight(yNode.getLeft().getRight());
                     if (childBF == 1) {
                         rightRotate(yNode);
                         cnt++;
@@ -208,7 +208,7 @@ public class AVLTree {
                         cnt += 2;
                     }
                 } else {                // BF = -2
-                    childBF = yNode.getRight().getLeft().getHeight() - yNode.getRight().getRight().getHeight();
+                    childBF = getHeight(yNode.getRight().getLeft()) - getHeight(yNode.getRight().getRight());
                     if (childBF == 1) {
                         rightRotate(yNode.getRight());
                         leftRotate(yNode);
@@ -283,13 +283,13 @@ public class AVLTree {
             nodeSuccessor.setParent(node.getParent());
             nodeSuccessor.setLeft(node.getLeft());
             nodeSuccessor.setRight(node.getRight());
-            nodeSuccessor.setHeight(node.getHeight());
+            nodeSuccessor.setHeight(getHeight(node));
         }
 
         // Update height and size of all ancestors
         IAVLNode ancestor = parentOfDeletedNode;
         while (ancestor != null) {
-            ancestor.setHeight(1 + Math.max(ancestor.getLeft().getHeight(), ancestor.getRight().getHeight()));
+            ancestor.setHeight(1 + Math.max(getHeight(ancestor.getLeft()), getHeight(ancestor.getRight())));
             ((AVLNode) ancestor).setSize(((AVLNode) ancestor).getSize() - 1);
             ancestor = ancestor.getParent();
         }
@@ -303,9 +303,9 @@ public class AVLTree {
 
         IAVLNode y = deleteNodeBST(node);
         while (y != null) {
-            int balanceFactor = y.getLeft().getHeight() - y.getRight().getHeight();
+            int balanceFactor = getHeight(y.getLeft()) - getHeight(y.getRight());
             if (balanceFactor == -2) {
-                int rightBalanceFactor = y.getRight().getLeft().getHeight() - y.getRight().getRight().getHeight();
+                int rightBalanceFactor = getHeight(y.getRight().getLeft()) - getHeight(y.getRight().getRight());
                 if (rightBalanceFactor == -1 || rightBalanceFactor == 0) {
                     this.leftRotate(y.getRight());
                     rotations += 1;
@@ -315,7 +315,7 @@ public class AVLTree {
                     rotations += 2;
                 }
             } else if (balanceFactor == 2) {
-                int leftBalanceFactor = y.getLeft().getLeft().getHeight() - y.getLeft().getRight().getHeight();
+                int leftBalanceFactor = getHeight(y.getLeft().getLeft()) - getHeight(y.getLeft().getRight());
                 if (leftBalanceFactor == -1) {
                     this.leftRotate(y.getLeft());
                     this.rightRotate(y.getLeft());
@@ -496,6 +496,17 @@ public class AVLTree {
      */
     public IAVLNode getRoot() {
         return this.root;
+    }
+    
+    
+    public int getHeight(IAVLNode node) {
+    	
+    	if (node == null) {
+    		return -1;
+    	}
+    	
+    	return node.getHeight();
+    	
     }
 
     /**
