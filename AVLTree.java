@@ -156,8 +156,13 @@ public class AVLTree {
      * k already exists in the tree.
      */
     public int insert(int k, String i) {
-
         IAVLNode newNode = new AVLNode(k, i);
+
+        if (this.root == null) {
+            this.root = newNode;
+            return 0;
+        }
+
         IAVLNode xNode = this.root;
         IAVLNode yNode = null;
 
@@ -239,19 +244,27 @@ public class AVLTree {
 
         // If node is a leaf, simply delete it
         if (node.getLeft() == null && node.getRight() == null) {
-            if (node.getParent().getLeft() == node) {
-                node.getParent().setLeft(null);
+            if (node.getParent() != null) {
+                if (node.getParent().getLeft() == node) {
+                    node.getParent().setLeft(null);
+                } else {
+                    node.getParent().setRight(null);
+                }
             } else {
-                node.getParent().setRight(null);
+                this.root = null;
             }
             parentOfDeletedNode = node.getParent();
         }
         // if node has only a right child, bypass it
         else if (node.getLeft() == null) {
-            if (node.getParent().getLeft() == node) {
-                node.getParent().setLeft(node.getRight());
+            if (node.getParent() != null) {
+                if (node.getParent().getLeft() == node) {
+                    node.getParent().setLeft(node.getRight());
+                } else {
+                    node.getParent().setRight(node.getRight());
+                }
             } else {
-                node.getParent().setRight(node.getRight());
+                this.root = node.getRight();
             }
             node.getRight().setParent(node.getParent());
 
@@ -259,10 +272,14 @@ public class AVLTree {
         }
         // if node has only a left child, bypass it
         else if (node.getRight() == null) {
-            if (node.getParent().getLeft() == node) {
-                node.getParent().setLeft(node.getLeft());
+            if (node.getParent() != null) {
+                if (node.getParent().getLeft() == node) {
+                    node.getParent().setLeft(node.getLeft());
+                } else {
+                    node.getParent().setRight(node.getLeft());
+                }
             } else {
-                node.getParent().setRight(node.getLeft());
+                this.root = node.getLeft();
             }
             node.getLeft().setParent(node.getParent());
 
@@ -275,11 +292,16 @@ public class AVLTree {
             parentOfDeletedNode = this.deleteNodeBST(nodeSuccessor);
 
             // replace node with successor
-            if (node.getParent().getLeft() == node) {
-                node.getParent().setLeft(nodeSuccessor);
+            if (node.getParent() != null) {
+                if (node.getParent().getLeft() == node) {
+                    node.getParent().setLeft(nodeSuccessor);
+                } else {
+                    node.getParent().setRight(nodeSuccessor);
+                }
             } else {
-                node.getParent().setRight(nodeSuccessor);
+                this.root = nodeSuccessor;
             }
+
             nodeSuccessor.setParent(node.getParent());
             nodeSuccessor.setLeft(node.getLeft());
             nodeSuccessor.setRight(node.getRight());
@@ -497,16 +519,16 @@ public class AVLTree {
     public IAVLNode getRoot() {
         return this.root;
     }
-    
-    
+
+
     public int getHeight(IAVLNode node) {
-    	
-    	if (node == null) {
-    		return -1;
-    	}
-    	
-    	return node.getHeight();
-    	
+
+        if (node == null) {
+            return -1;
+        }
+
+        return node.getHeight();
+
     }
 
     /**
