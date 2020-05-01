@@ -79,7 +79,7 @@ public class CircularList {
     			for (int j = i-1; j >= 0 ; j--) {
     				arr[(start + j + 1) % maxLen] = arr[(start + j) % maxLen];
     			}
-    			start ++;
+    			start = ((start + 1) % maxLen);
     		}
     		
     		len --;
