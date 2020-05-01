@@ -39,18 +39,54 @@ class AVLTreeTest {
 
     @Test
     void min() {
+        AVLTree tree = new AVLTree();
+        tree.insert(3, "hello");
+        tree.insert(2, "bye");
+        tree.insert(-1, "bla");
+        assertEquals("bla", tree.min());
     }
 
     @Test
     void max() {
+        AVLTree tree = new AVLTree();
+        tree.insert(3, "hello");
+        tree.insert(2, "bye");
+        tree.insert(-1, "bla");
+        assertEquals("hello", tree.max());
     }
 
     @Test
     void keysToArray() {
+        AVLTree tree = new AVLTree();
+        tree.insert(17, "a");
+        tree.insert(3, "b");
+        tree.insert(18, "yes");
+        tree.insert(5, "no");
+        tree.insert(7, "c");
+
+        String[] arr = tree.infoToArray();
+        assertArrayEquals(arr, new String[]{"b", "no", "c", "a", "yes"});
+
+        AVLTree tree2 = new AVLTree();
+        int[] arr2 = tree2.keysToArray();
+        assertArrayEquals(arr2, new int[]{});
     }
 
     @Test
     void infoToArray() {
+        AVLTree tree = new AVLTree();
+        tree.insert(17, "a");
+        tree.insert(3, "b");
+        tree.insert(18, "yes");
+        tree.insert(5, "no");
+        tree.insert(7, "c");
+
+        int[] arr = tree.keysToArray();
+        assertArrayEquals(arr, new int[]{3, 5, 7, 17, 18});
+
+        AVLTree tree2 = new AVLTree();
+        String[] arr2 = tree2.infoToArray();
+        assertArrayEquals(arr2, new String[]{});
     }
 
     @Test
@@ -78,5 +114,13 @@ class AVLTreeTest {
 
     @Test
     void getRoot() {
+        AVLTree tree = new AVLTree();
+        tree.insert(3, "hello");
+        tree.insert(2, "bye");
+        tree.insert(1, "bla");
+        //int y = tree.tryRoot();
+        //assertEquals(y, 2);
     }
+
+
 }

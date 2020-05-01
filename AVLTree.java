@@ -237,14 +237,6 @@ public class AVLTree {
         return cnt;
     }
 
-    /**
-     * public int delete(int k)
-     * <p>
-     * deletes an item with key k from the binary tree, if it is there; the tree
-     * must remain valid (keep its invariants). returns the number of rebalancing
-     * operations, or 0 if no rebalancing operations were needed. returns -1 if an
-     * item with key k was not found in the tree.
-     */
     public IAVLNode deleteNodeBST(IAVLNode node) {
         IAVLNode parentOfDeletedNode = null;
 
@@ -301,25 +293,17 @@ public class AVLTree {
             ((AVLNode) node).setItem(nodeSuccessor.getKey(), nodeSuccessor.getValue());
         }
 
-        // Update height and size of all ancestors
-        updateHeightsAndSizes(parentOfDeletedNode);
-
         return parentOfDeletedNode;
     }
 
-    // Update heights and sizes of all nodes from node upwards
-    public void updateHeightsAndSizes(IAVLNode node) {
-        while (node != null) {
-            node.setHeight(1 + Math.max(getHeight(node.getLeft()), getHeight(node.getRight())));
-            ((AVLNode) node).setSize(1 + getSize(node.getLeft()) + getSize(node.getRight()));
-            node = node.getParent();
-        }
-    }
-
     // Perform rotations from node upwards, return number of rotations performed
+    // Also updates heights and sizes of all ancestors
     public int fixAVLCriminals(IAVLNode node) {
         int rotations = 0;
         while (node != null) {
+            node.setHeight(1 + Math.max(getHeight(node.getLeft()), getHeight(node.getRight())));
+            ((AVLNode) node).setSize(1 + getSize(node.getLeft()) + getSize(node.getRight()));
+
             int balanceFactor = getHeight(node.getLeft()) - getHeight(node.getRight());
             if (balanceFactor == -2) {
                 int rightBalanceFactor = getHeight(node.getRight().getLeft()) - getHeight(node.getRight().getRight());
@@ -347,7 +331,14 @@ public class AVLTree {
         return rotations;
     }
 
-    // Returns -1 if k doesn't exist, otherwise number of rotations performed
+    /**
+     * public int delete(int k)
+     * <p>
+     * deletes an item with key k from the binary tree, if it is there; the tree
+     * must remain valid (keep its invariants). returns the number of rebalancing
+     * operations, or 0 if no rebalancing operations were needed. returns -1 if an
+     * item with key k was not found in the tree.
+     */
     public int delete(int k) {
         IAVLNode node = this.root;
 

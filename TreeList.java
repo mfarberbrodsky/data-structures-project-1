@@ -65,8 +65,7 @@ public class TreeList {
                 parentOfInsertedNode = x;
             }
         }
-
-        this.tree.updateHeightsAndSizes(parentOfInsertedNode);
+        
         this.tree.fixAVLCriminals(parentOfInsertedNode);
 
         return 0;
@@ -82,7 +81,7 @@ public class TreeList {
         if (i < 0 || i > tree.size() - 1) {
             return -1;
         }
-        AVLTree.IAVLNode node = this.tree.TreeSelect(i);
+        AVLTree.IAVLNode node = this.tree.TreeSelect(i + 1);
         AVLTree.IAVLNode parentOfDeletedNode = this.tree.deleteNodeBST(node);
         this.tree.fixAVLCriminals(parentOfDeletedNode);
         return 0;
