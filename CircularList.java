@@ -49,7 +49,7 @@ public class CircularList {
     			}
     			start --;
     		}
-    		arr[(start + i) & maxLen] = new Item(k, s);
+    		arr[(start + i) % maxLen] = new Item(k, s);
     		
     		len ++;
     		return 0;
