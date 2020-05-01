@@ -114,6 +114,7 @@ public class AVLTree {
 
         x.setHeight(1 + Math.max(getHeight(x.getLeft()), getHeight(x.getRight())));
         y.setHeight(1 + Math.max(getHeight(y.getLeft()), getHeight(y.getRight())));
+        y.getParent().setHeight(1 + Math.max(getHeight(y.getParent().getLeft()), getHeight(y.getParent().getRight())));
     }
 
     public void rightRotate(IAVLNode x) {
@@ -145,6 +146,7 @@ public class AVLTree {
 
         x.setHeight(1 + Math.max(getHeight(x.getLeft()), getHeight(x.getRight())));
         y.setHeight(1 + Math.max(getHeight(y.getLeft()), getHeight(y.getRight())));
+        y.getParent().setHeight(1 + Math.max(getHeight(y.getParent().getLeft()), getHeight(y.getParent().getRight())));
     }
 
     /**
