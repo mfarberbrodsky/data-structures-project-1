@@ -22,7 +22,7 @@ public class CircularList {
      * returns the item in the ith position if it exists in the list.
      * otherwise, returns null
      * 
-     * O(1)
+     * Complexity: O(1)
      */
     public Item retrieve(int i) {
         if ((0 <= i) && (i < len)) {
@@ -39,7 +39,7 @@ public class CircularList {
      * inserts an item to the ith position in list  with key k and  info s.
      * returns -1 if i<0 or i>n  or n=maxLen otherwise return 0.
      * 
-     * O(min{ i+1 , n-i+1 }) 
+     * Complexity: O(min{ i+1 , n-i+1 })
      */
     public int insert(int i, int k, String s) {
         if ((0 <= i) && (i <= len) && (i < maxLen)) {  // i is legal
@@ -71,7 +71,7 @@ public class CircularList {
      * deletes an item in the ith posittion from the list.
      * returns -1 if i<0 or i>n-1 otherwise returns 0.
      * 
-     * O(min{ i+1 , n-i+1 }) 
+     * Complexity: O(min{ i+1 , n-i+1 })
      */
     public int delete(int i) {
         if ((0 <= i) && (i <= len - 1)) {    // i is legal
@@ -102,7 +102,7 @@ public class CircularList {
      * insures position using modulu is positive (or 0)
      * returns position of the i'th item in circular list
      * 
-     * O(1)
+     * Complexity: O(1)
      */
     private int getPos(int i) { 
         int modulu = (start + i) % maxLen;
