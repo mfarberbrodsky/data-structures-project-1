@@ -70,6 +70,8 @@ public class AVLTree {
      * <p>
      * returns the info of an item with key k if it exists in the tree otherwise,
      * returns null
+     * 
+     * O(log n)
      */
     public String search(int k) {
         IAVLNode node = this.root;
@@ -156,11 +158,13 @@ public class AVLTree {
      * valid (keep its invariants). returns the number of rebalancing operations, or
      * 0 if no rebalancing operations were necessary. returns -1 if an item with key
      * k already exists in the tree.
+     * 
+     * O(log n)
      */
     public int insert(int k, String i) {
         IAVLNode newNode = new AVLNode(k, i);
 
-        if (this.root == null) {
+        if (this.root == null) { //tree is empty
             this.root = newNode;
             return 0;
         }
@@ -168,12 +172,12 @@ public class AVLTree {
         IAVLNode xNode = this.root;
         IAVLNode yNode = null;
 
-        while (xNode != null) {
+        while (xNode != null) { // xNode searches for the right place for the new node
             yNode = xNode;
-            if (xNode.getKey() == k) {
+            if (xNode.getKey() == k) { // an item with key k  already exists in the tree 
                 return -1;
             }
-            if (xNode.getKey() < k) {
+            if (xNode.getKey() < k) { // search for k
                 xNode = xNode.getRight();
             } else {
                 xNode = xNode.getLeft();
@@ -187,24 +191,24 @@ public class AVLTree {
             yNode.setLeft(newNode);
         }
 
-        int BF = 0;
-        int childBF = 0;
+        int BF = 0; // Balance Factor
+        int childBF = 0; 
         int oldHeight = 0;
         int cnt = 0; // number of rotations while the insertion
 
-        while (yNode != null) {
+        while (yNode != null) { // go over the path from the new node's parent to the tree root
 
             BF = getHeight(yNode.getLeft()) - getHeight(yNode.getRight());
             oldHeight = getHeight(yNode);
 
-            yNode.setHeight(1 + Math.max(getHeight(yNode.getLeft()), getHeight(yNode.getRight())));
-            ((AVLNode) yNode).setSize(1 + getSize(yNode.getLeft()) + getSize(yNode.getRight()));
+            yNode.setHeight(1 + Math.max(getHeight(yNode.getLeft()), getHeight(yNode.getRight()))); // update node's height
+            ((AVLNode) yNode).setSize(1 + getSize(yNode.getLeft()) + getSize(yNode.getRight())); // update node's size
 
-            if ((Math.abs(BF) < 2) && (oldHeight == getHeight(yNode))) {
+            if ((Math.abs(BF) < 2) && (oldHeight == getHeight(yNode))) { // BF is ok and height hasn't changed
                 break;
-            } else if ((Math.abs(BF) < 2) && (oldHeight != getHeight(yNode))) {
+            } else if ((Math.abs(BF) < 2) && (oldHeight != getHeight(yNode))) { // BF is ok but height has changed
                 yNode = yNode.getParent();
-            } else {                    // abs(BF) = 2
+            } else {  // abs(BF) = 2, BF is illegal => perform rotation to fix the BF
                 if (BF == 2) {
                     childBF = getHeight(yNode.getLeft().getLeft()) - getHeight(yNode.getLeft().getRight());
                     if (childBF == 1) {
@@ -231,7 +235,7 @@ public class AVLTree {
             }
         }
 
-        while (yNode != null) {
+        while (yNode != null) { // continue and update the sizes
             ((AVLNode) yNode).setSize(1 + getSize(yNode.getLeft()) + getSize(yNode.getRight()));
             yNode = yNode.getParent();
         }
@@ -380,14 +384,16 @@ public class AVLTree {
      * <p>
      * Returns the info of the item with the largest key in the tree, or null if the
      * tree is empty
+     * 
+     * O(log n)
      */
     public String max() {
         if (this.empty()) {
-            return null;
+            return null; // there is no max
         }
 
         IAVLNode node = root;
-        while (node.getRight() != null) {
+        while (node.getRight() != null) { //go right all the way - the max item is in the right 'corner'
             node = node.getRight();
         }
         return node.getValue();
@@ -398,14 +404,16 @@ public class AVLTree {
      * <p>
      * Returns a sorted array which contains all keys in the tree, or an empty array
      * if the tree is empty.
+     * 
+     * O(n)
      */
     public int[] keysToArray() {
 
         if (this.empty()) {
-            return new int[0];
+            return new int[0]; // return empty array
         }
 
-        IAVLNode[] stack = new IAVLNode[this.size()];
+        IAVLNode[] stack = new IAVLNode[this.size()]; // node stack which would keep the nodes we walked on
         int[] arr = new int[this.size()];
 
         int stackPointer = 0;
@@ -420,19 +428,19 @@ public class AVLTree {
         while ((stackPointer >= 0) || (node != null)) {
 
             while (node != null) {
-                stackPointer++;
-                stack[stackPointer] = node;
-                node = node.getLeft();
+                stackPointer++; 
+                stack[stackPointer] = node; // add node to stack
+                node = node.getLeft(); // keep going left (to node with smaller key)
             }
 
             node = stack[stackPointer];
-            stack[stackPointer] = null;
+            stack[stackPointer] = null; // remove the last item in stack
             stackPointer--;
 
-            arr[arrPointer] = node.getKey();
+            arr[arrPointer] = node.getKey(); // add to array the key of the last node we walked on
             arrPointer++;
 
-            node = node.getRight();
+            node = node.getRight(); // go to node with larger key
 
         }
 
@@ -444,6 +452,8 @@ public class AVLTree {
      * <p>
      * Returns an array which contains all info in the tree, sorted by their
      * respective keys, or an empty array if the tree is empty.
+     * 
+     * O(n)
      */
     public String[] infoToArray() {
 
@@ -463,7 +473,7 @@ public class AVLTree {
         node = node.getLeft();
 
 
-        while ((stackPointer >= 0) || (node != null)) {
+        while ((stackPointer >= 0) || (node != null)) { // do (almost) the same progress as keysToArray func does
 
             while (node != null) {
                 stackPointer++;
@@ -475,7 +485,7 @@ public class AVLTree {
             stack[stackPointer] = null;
             stackPointer--;
 
-            arr[arrPointer] = node.getValue();
+            arr[arrPointer] = node.getValue(); // add to array the value of the last node we walked on
             arrPointer++;
 
             node = node.getRight();
