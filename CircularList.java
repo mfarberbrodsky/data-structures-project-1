@@ -1,3 +1,8 @@
+/*
+Yuval Cohen yuvalc2 213813918
+Maya Farber Brodsky mayaf2 325482842
+ */
+
 /**
  * Circular list
  * <p>
@@ -21,14 +26,13 @@ public class CircularList {
      * <p>
      * returns the item in the ith position if it exists in the list.
      * otherwise, returns null
-     * 
+     * <p>
      * Complexity: O(1)
      */
     public Item retrieve(int i) {
         if ((0 <= i) && (i < len)) {
             return arr[getPos(i)];
-        }
-        else {  // i is illegal
+        } else {  // i is illegal
             return null;
         }
     }
@@ -38,7 +42,7 @@ public class CircularList {
      * <p>
      * inserts an item to the ith position in list  with key k and  info s.
      * returns -1 if i<0 or i>n  or n=maxLen otherwise return 0.
-     * 
+     * <p>
      * Complexity: O(min{ i+1 , n-i+1 })
      */
     public int insert(int i, int k, String s) {
@@ -58,9 +62,7 @@ public class CircularList {
 
             len++;
             return 0;
-        } 
-        
-        else {    // i is illegal
+        } else {    // i is illegal
             return -1;
         }
     }
@@ -70,7 +72,7 @@ public class CircularList {
      * <p>
      * deletes an item in the ith posittion from the list.
      * returns -1 if i<0 or i>n-1 otherwise returns 0.
-     * 
+     * <p>
      * Complexity: O(min{ i+1 , n-i+1 })
      */
     public int delete(int i) {
@@ -88,23 +90,21 @@ public class CircularList {
             }
             len--;
             return 0;
-        }
-        
-        else {      // i is illegal
+        } else {      // i is illegal
             return -1;
         }
     }
 
-    
+
     /**
      * private int getPos(int i)
      * <p>
      * insures position using modulu is positive (or 0)
      * returns position of the i'th item in circular list
-     * 
+     * <p>
      * Complexity: O(1)
      */
-    private int getPos(int i) { 
+    private int getPos(int i) {
         int modulu = (start + i) % maxLen;
         if (modulu >= 0) {
             return modulu;
