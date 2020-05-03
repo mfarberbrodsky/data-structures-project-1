@@ -6,9 +6,13 @@
 
 public class AVLTree {
     private IAVLNode root;
+    private IAVLNode min;
+    private IAVLNode max;
 
     public AVLTree() {
         this.root = null;
+        this.min = null;
+        this.max = null;
     }
 
     /**
@@ -216,6 +220,8 @@ public class AVLTree {
 
         if (this.root == null) { //tree is empty
             this.root = newNode;
+            this.min = newNode;
+            this.max = newNode;
             return 0;
         }
 
@@ -232,6 +238,14 @@ public class AVLTree {
             } else {
                 xNode = xNode.getLeft();
             }
+        }
+
+        // Update min, max nodes if necessary
+        if (newNode.getKey() < min.getKey()) {
+            min = newNode;
+        }
+        if (newNode.getKey() > max.getKey()) {
+            max = newNode;
         }
 
         newNode.setParent(yNode);
@@ -304,6 +318,16 @@ public class AVLTree {
      */
     public IAVLNode deleteNodeBST(IAVLNode node) {
         IAVLNode parentOfDeletedNode = null;
+
+        // Update min, max nodes if necessary
+        if (node == min && node == max) {
+            min = null;
+            max = null;
+        } else if (node == min) {
+            min = successor(min);
+        } else if (node == max) {
+            max = predecessor(max);
+        }
 
         // If node is a leaf, simply delete it
         if (node.getLeft() == null && node.getRight() == null) {
@@ -437,7 +461,7 @@ public class AVLTree {
      * Returns the info of the item with the smallest key in the tree, or null if
      * the tree is empty
      * <p>
-     * Complexity: O(logn)
+     * Complexity: O(1)
      */
     public String min() {
         // If tree is empty, return null
@@ -445,12 +469,7 @@ public class AVLTree {
             return null;
         }
 
-        // Otherwise, minimum node is the leftmost node in the tree.
-        IAVLNode node = this.root;
-        while (node.getLeft() != null) {
-            node = node.getLeft();
-        }
-        return node.getValue();
+        return min.getValue();
     }
 
     /**
@@ -459,18 +478,14 @@ public class AVLTree {
      * Returns the info of the item with the largest key in the tree, or null if the
      * tree is empty
      * <p>
-     * Complexity: O(log n)
+     * Complexity: O(1)
      */
     public String max() {
         if (this.empty()) {
             return null; // there is no max
         }
 
-        IAVLNode node = root;
-        while (node.getRight() != null) { //go right all the way - the max item is in the right 'corner'
-            node = node.getRight();
-        }
-        return node.getValue();
+        return max.getValue();
     }
 
     /**
